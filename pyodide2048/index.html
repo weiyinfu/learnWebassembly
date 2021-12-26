@@ -1,0 +1,87 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Pyodide2048</title>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: #333333;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #main {
+            background: #2b542c;
+            display: flex;
+            flex-wrap: wrap;
+            border-radius: 3px;
+            box-sizing: border-box;
+        }
+
+        #cover {
+            opacity: 0.7;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            right: 0;
+            background: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .grid {
+            display: flex;
+            box-sizing: border-box;
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            border: solid 1px #bbbbbb;
+            color: white;
+        }
+
+        #toast {
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            border: solid 1px #bbbbbb;
+            padding: 10px;
+            border-radius: 10px;
+            opacity: 0.9;
+        }
+    </style>
+
+</head>
+<body>
+<div id="main">
+</div>
+<div id="cover" style="display: none">
+    <div id="toast"><span>Game Over<span><br><span style="font-size: 13px">Press Enter To Continue</span></div>
+</div>
+<audio src="res/move.mp3" id="move" preload="auto"></audio>
+<audio src="res/over.mp3" id="over" preload="auto"></audio>
+<audio src="res/start.mp3" id="start" preload="auto"></audio>
+</body>
+<script>
+    async function main() {
+        let pyodide = await loadPyodide({indexURL: "https://cdn.jsdelivr.net/pyodide/v0.18.1/full/"});
+        await pyodide.loadPackage('numpy');
+        pyScript = await axios.get("./2048.py")
+        pyodide.runPython(pyScript.data);
+    }
+
+    main();
+</script>
+</html>

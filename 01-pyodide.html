@@ -1,0 +1,55 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
+</head>
+<body>
+<div id="text"></div>
+<div id="time"></div>
+<div id="dom"></div>
+<div>
+    <button id="dom-event">点我</button>
+</div>
+</body>
+<script>
+    async function main() {
+        let pyodide = await loadPyodide({indexURL: "https://cdn.jsdelivr.net/pyodide/v0.18.1/full/"});
+        //运行python获取最后的返回值
+        document.querySelector("#text").innerHTML += pyodide.runPython(`
+    '天下大势，为我所控'
+  `);
+        //运行python获取最后的返回值
+        const now = pyodide.runPython(`
+import datetime
+datetime.datetime.now()
+        `);
+
+        document.querySelector("#time").innerHTML = now + " " + typeof now;
+        //运行numpy，并在控制台中获取变量。
+        await pyodide.loadPackage('numpy');
+        pyodide.runPython(`
+  import numpy
+  x=numpy.ones((3, 4))
+`);
+        console.log(pyodide.globals.get('x').toJs());
+        //操作dom
+        pyodide.runPython(`
+from js import document
+ele=document.getElementById("dom")
+ele.innerText='天下大势为我所控'
+ele.style.color='red'
+        `)
+        //操作dom事件
+        pyodide.runPython(`
+        ele=document.querySelector('#dom-event')
+        click_count=0
+        def onclick(evt):
+            global click_count
+            click_count+=1
+            ele.innerText=f"点击{click_count}次了"
+        ele.onclick=onclick
+        `)
+    };
+    main();
+</script>
+</html>
